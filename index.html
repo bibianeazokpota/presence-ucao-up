@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Liste de présence - UCAO UP (Sections)</title>
+  <style>
+   :root{
+  --green:#1e9e5a;
+  --green-soft:#e9f7ef;
+  --red:#e74c3c;
+  --yellow:#f1c40f;
+  --dark:#064e3b;
+  --card:#ffffffcc;
+  --border:#d1fae5;
+}
+
+*{
+  box-sizing:border-box;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  color:#064e3b;
+  background:
+    linear-gradient(to bottom right, #e9f7ef, #d1fae5);
+}
+
+/* ===== HEADER ===== */
+header{
+  background:linear-gradient(135deg, #0f766e, #16a34a);
+  color:white;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  box-shadow:0 6px 20px rgba(0,0,0,.2);
+}
+
+header img{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+  background:white;
+  padding:6px;
+  border-radius:50%;
+}
+
+header h1{
+  margin:0;
+  font-size:1.3rem;
+  letter-spacing:.5px;
+}
+
+header p{
+  margin:4px 0 0;
+  opacity:.9;
+  font-size:.9rem;
+}
+
+/* ===== CONTAINER ===== */
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+
+/* ===== TOP BAR ===== */
+.top-bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+select, input, button{
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid #a7f3d0;
+  background:white;
+  color:#064e3b;
+}
+
+button{
+  cursor:pointer;
+  font-weight:500;
+  transition:.2s;
+}
+
+button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 4px 10px rgba(0,0,0,.12);
+}
+
+button.primary{
+  background:#16a34a;
+  color:white;
+  border:none;
+}
+
+/* ===== MEMBERS GRID ===== */
+.members{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+}
+
+/* ===== CARD ===== */
+.card{
+  background:var(--card);
+  backdrop-filter:blur(8px);
+  border:2px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  transition:.25s;
+}
+
+.card.present{
+  border-color:var(--green);
+  background:#ecfdf5;
+}
+
+.card.absent{
+  border-color:var(--red);
+  background:#fff1f2;
+}
+
+.card.permission{
+  border-color:var(--yellow);
+  background:#fef9c3;
+}
+
+/* Colorer le texte du statut selon l'état */
+.card.present .status b{ color: var(--green); }
+.card.absent .status b{ color: var(--red); }
+.card.permission .status b{ color: var(--yellow); }
+
+.name{
+  font-weight:700;
+  font-size:1.05rem;
+}
+
+.status{
+  margin:6px 0 10px;
+  font-size:.9rem;
+}
+
+/* ===== ACTION BUTTONS ===== */
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.actions button{
+  flex:1;
+  font-size:.8rem;
+}
+
+.btn-present{background:#22c55e;color:white;border:none}
+.btn-absent{background:#ef4444;color:white;border:none}
+.btn-perm{background:#facc15;color:#422006;border:none}
+.btn-edit{background:#0f766e;color:white;border:none}
+.btn-del{background:white;border:1px solid #ef4444;color:#ef4444}
+
+/* ===== FOOTER ===== */
+.footer{
+  opacity:.7;
+  text-align:center;
+  padding:20px;
+  font-size:.85rem;
+}
+
+/* ===== MODAL ===== */
+.modal{
+  position:fixed;
+  inset:0;
+  background:#0007;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+
+.modal-content{
+  background:white;
+  padding:18px;
+  border-radius:16px;
+  width:100%;
+  max-width:360px;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.modal-content h3{
+  margin-top:0;
+  color:#065f46;
+}
+
+.modal-content .row{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+  <img src="logo-ucao.png" alt="Logo UCAO-UP">
+  <div>
+    <h1>Union Culturelle et Artistique Olatomié – UP</h1>
+    <p>Liste de présence par section (responsable uniquement)</p>
+  </div>
+</header>
+
+
+  <div class="container">
+    <div class="top-bar">
+      <select id="sectionSelect"></select>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="primary" id="btnAdd" onclick="openModal()">+ Ajouter un membre</button>
+        <button id="btnReset" onclick="openEditPresence()">Modifier présences</button>
+        <button onclick="openStats()">📊 Statistiques</button>
+        <button onclick="printList()">🖨️ Imprimer</button>
+        <button onclick="exportCSV()">💾 Export CSV</button>
+        <button onclick="exportPDF()">💾 Export PDF</button>
+        <button id="authBtn" onclick="openAuth()">🔒 Se connecter</button>
+      </div>
+    </div>
+
+    <div id="members" class="members"></div>
+  </div>
+
+  <div class="footer">Données enregistrées automatiquement sur cet appareil (localStorage)</div>
+
+  <!-- Modal ajout / modification -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Ajouter un membre</h3>
+      <input id="memberName" placeholder="Nom complet" />
+      <div class="row">
+        <button class="primary" onclick="saveMember()">Enregistrer</button>
+        <button onclick="closeModal()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal statistiques -->
+  <div id="statsModal" class="modal">
+    <div class="modal-content">
+      <h3>Statistiques</h3>
+      <div id="statsContent"></div>
+      <div class="row">
+        <button onclick="closeStats()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal historique présences -->
+  <div id="historyModal" class="modal">
+    <div class="modal-content">
+      <h3>Historique des présences</h3>
+      <div id="historyContent"></div>
+      <div class="row">
+        <button onclick="closeHistory()">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal édition présence (correction) -->
+  <div id="editPresenceModal" class="modal">
+    <div class="modal-content">
+      <h3>Modifier présence (correction)</h3>
+      <select id="editMemberSelect"></select>
+      <div style="margin-top:10px;display:flex;gap:8px">
+        <button onclick="saveEditPresence('present')" class="btn-present">Présent</button>
+        <button onclick="saveEditPresence('absent')" class="btn-absent">Absent</button>
+        <button onclick="saveEditPresence('permission')" class="btn-perm">Permission</button>
+        <button onclick="saveEditPresence('delete')" class="btn-del">Supprimer dernière entrée</button>
+      </div>
+      <div class="row">
+        <button onclick="closeEditPresence()">Annuler</button>
+      </div>
+      <p style="margin-top:8px;font-size:.85rem;color:#666">Cette action enregistre une correction dans l'historique (type "correction").</p>
+    </div>
+  </div>
+
+  <!-- Modal auth -->
+  <div id="authModal" class="modal">
+    <div class="modal-content">
+      <h3 id="authTitle">Connexion responsable</h3>
+      <input id="authPass" type="password" placeholder="Mot de passe" />
+      <div class="row">
+        <button class="primary" onclick="doAuth()">OK</button>
+        <button onclick="closeAuth()">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>
