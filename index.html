@@ -222,6 +222,42 @@ button.primary{
   margin-top:12px;
 }
 
+.top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.top-bar select,
+.top-bar button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 480px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .top-left, .top-right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin-left: 0;
+  }
+
+  .top-left select,
+  .top-left button {
+    width: auto;
+  }
+
+  .top-right button {
+    width: 100%;
+    margin-top: 4px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -234,20 +270,20 @@ button.primary{
 </header>
 
 
-  <div class="container">
-    <div class="top-bar">
-      <select id="sectionSelect"></select>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="primary" id="btnAdd" onclick="openModal()">+ Ajouter un membre</button>
-        <button id="btnReset" onclick="openEditPresence()">Modifier présences</button>
-        <button onclick="openStats()">📊 Statistiques</button>
-        <button id="authBtn" onclick="openAuth()">🔒 Se connecter</button>
-        <button id="changePassBtn" style="display:none" onclick="openChangePass()">
-  🔑 Changer mot de passe
-</button>
+  <div class="top-bar">
+  <div class="top-left" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <select id="sectionSelect"></select>
+    <button class="primary" id="btnAdd" onclick="openModal()">+ Ajouter un membre</button>
+  </div>
 
-      </div>
-    </div>
+  <div class="top-right" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto;">
+    <button id="btnReset" onclick="openEditPresence()">Modifier présences</button>
+    <button onclick="openStats()">📊 Statistiques</button>
+    <button id="authBtn" onclick="openAuth()">🔒 Se connecter</button>
+    <button id="changePassBtn" style="display:none" onclick="openChangePass()">🔑 Changer mot de passe</button>
+  </div>
+</div>
+
 
     <div id="members" class="members"></div>
   </div>
