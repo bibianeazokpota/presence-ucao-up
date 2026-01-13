@@ -7,7 +7,8 @@ const defaultSections = [
   "Poésie / Slam",
   "Impresario",
   "Tresse / Make-up",
-  "Arts plastiques"
+  "Arts plastiques",
+  "Orchestre Olatomi"
 ];
 
 let stored = null;
@@ -18,6 +19,12 @@ try{
   stored = null;
 }
 let data = stored || {sections: defaultSections.map(s => ({name:s, members:[]}))};
+// Ajouter Orchestre Olatomi si elle n'existe pas
+if (!data.sections.find(s => s.name === "Orchestre Olatomi")) {
+  data.sections.push({ name: "Orchestre Olatomi", members: [], leaderPass: null });
+  save(); // sauvegarde dans le localStorage
+}
+
 
 if(!data.sections || !Array.isArray(data.sections) || data.sections.length === 0){
   data.sections = defaultSections.map(s => ({name:s, members:[]}));
