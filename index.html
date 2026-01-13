@@ -168,11 +168,28 @@ button.primary{
 
 /* ===== FOOTER ===== */
 .footer{
-  opacity:.7;
-  text-align:center;
-  padding:20px;
-  font-size:.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* espace entre haut, milieu, bas */
+  align-items: center; /* centrer horizontalement */
+  height: 100px; /* tu peux ajuster la hauteur */
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: #064e3b;
+  background: #e9f7ef; /* optionnel, ou transparent */
 }
+.footer-top {
+  align-self: flex-start; /* en haut */
+}
+.footer-middle {
+  text-align: center; /* centré */
+  font-weight: bold;
+}
+.footer-bottom {
+  align-self: flex-end; /* en bas */
+  font-style: italic;
+}
+
 
 /* ===== MODAL ===== */
 .modal{
@@ -228,13 +245,21 @@ button.primary{
         <button onclick="exportCSV()">💾 Export CSV</button>
         <button onclick="exportPDF()">💾 Export PDF</button>
         <button id="authBtn" onclick="openAuth()">🔒 Se connecter</button>
+        <button id="changePassBtn" style="display:none" onclick="openChangePass()">
+  🔑 Changer mot de passe
+</button>
+
       </div>
     </div>
 
     <div id="members" class="members"></div>
   </div>
 
-  <div class="footer">Données enregistrées automatiquement sur cet appareil (localStorage)</div>
+  <div class="footer">
+  <div class="footer-top">Avec UCAO-UP</div>
+  <div class="footer-middle">l'Art se sent, l'art se crée, l'art se vit !!</div>
+  <div class="footer-bottom">Olatomie toujours haut !!!</div>
+</div>
 
   <!-- Modal ajout / modification -->
   <div id="modal" class="modal">
@@ -293,12 +318,37 @@ button.primary{
     <div class="modal-content">
       <h3 id="authTitle">Connexion responsable</h3>
       <input id="authPass" type="password" placeholder="Mot de passe" />
+      <button id="authConfirmBtn" onclick="doAuth()">Valider</button>
+
       <div class="row">
         <button class="primary" onclick="doAuth()">OK</button>
         <button onclick="closeAuth()">Annuler</button>
       </div>
+
+      <p id="forgotPassWrapper" style="margin-top:10px;text-align:center; display:none;">
+  <button style="background:none;border:none;color:#0f766e;text-decoration:underline;cursor:pointer"
+          onclick="openAdminReset()">
+    Mot de passe oublié ?
+  </button>
+</p>
+
     </div>
   </div>
+
+  <!-- Modal admin pour réinitialiser mot de passe chef de section -->
+<div id="adminModal" class="modal">
+  <div class="modal-content">
+    <h3>Réinitialisation mot de passe</h3>
+    <input id="adminPass" type="password" placeholder="Mot de passe admin" />
+    <select id="adminSectionSelect" style="margin-top:10px"></select>
+    <input id="newLeaderPass" type="password" placeholder="Nouveau mot de passe section" style="margin-top:10px" />
+    <div class="row" style="margin-top:10px">
+      <button class="primary" onclick="doAdminReset()">Réinitialiser</button>
+      <button onclick="closeAdminReset()">Annuler</button>
+    </div>
+  </div>
+</div>
+
 
 <script src="app.js"></script>
 </body>

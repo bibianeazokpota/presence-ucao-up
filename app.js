@@ -54,10 +54,49 @@ function isSectionLogged(){
 function openAuth(){
   const section = data.sections[currentSectionIndex];
   const storedPass = section && section.leaderPass;
-  document.getElementById('authTitle').textContent = storedPass ? 'Connexion chef de section' : 'Créer mot de passe (chef de section)';
+  
+  document.getElementById('authTitle').textContent = storedPass 
+      ? 'Connexion chef de section' 
+      : 'Créer mot de passe (chef de section)';
+
   document.getElementById('authPass').value = '';
   document.getElementById('authModal').style.display = 'flex';
+
+  // Montrer le bouton "Mot de passe oublié ?" seulement si mot de passe déjà créé
+  document.getElementById('forgotPassWrapper').style.display = storedPass ? 'block' : 'none';
+
+  // on change temporairement l'action du bouton
+  document.getElementById('authConfirmBtn').onclick = doAuth;
 }
+
+function openChangePass(){
+  if(!isSectionLogged()) return alert("Vous devez être connecté.");
+
+  document.getElementById('authTitle').textContent = 'Nouveau mot de passe';
+  document.getElementById('authPass').value = '';
+  document.getElementById('authModal').style.display = 'flex';
+
+  // on change temporairement l'action du bouton
+  document.getElementById('authConfirmBtn').onclick = changePassword;
+}
+
+function changePassword(){
+  const val = document.getElementById('authPass').value;
+  if(!val) return alert('Entrez le nouveau mot de passe');
+
+  const section = data.sections[currentSectionIndex];
+  section.leaderPass = val;
+  save();
+
+  closeAuth();
+
+  // remettre le bouton à sa fonction normale
+  document.getElementById('authConfirmBtn').onclick = doAuth;
+
+  alert("Mot de passe modifié avec succès ✅");
+}
+
+
 function closeAuth(){ document.getElementById('authModal').style.display='none'; }
 
 function doAuth(){
@@ -92,17 +131,24 @@ function refreshAuthUI(){
   const authBtn = document.getElementById('authBtn');
   const btnAdd = document.getElementById('btnAdd');
   const btnReset = document.getElementById('btnReset');
+  const changePassBtn = document.getElementById('changePassBtn');
+
   if(isSectionLogged()){
     authBtn.textContent = 'Déconnexion';
     authBtn.onclick = logout;
-    btnAdd.disabled = false; btnReset.disabled = false;
+    btnAdd.disabled = false; 
+    btnReset.disabled = false;
+    changePassBtn.style.display = 'inline-block';
   } else {
     authBtn.textContent = '🔒 Se connecter (chef section)';
     authBtn.onclick = openAuth;
-    btnAdd.disabled = true; btnReset.disabled = true;
+    btnAdd.disabled = true; 
+    btnReset.disabled = true;
+    changePassBtn.style.display = 'none';
   }
   render();
 }
+
 
 // Init auth UI state
 window.addEventListener('load', ()=> refreshAuthUI());
@@ -374,9 +420,48 @@ function resetSections(){
   save();
 }
 
+
+
 // ================== STORAGE ==================
 function save(){
   localStorage.setItem("ucao_presence", JSON.stringify(data));
+}
+
+// Ouvre le modal admin
+function openAdminReset(){
+  document.getElementById('adminModal').style.display = 'flex';
+
+  // remplir la liste des sections
+  const sel = document.getElementById('adminSectionSelect');
+  sel.innerHTML = '';
+  data.sections.forEach((s,i)=>{
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = s.name;
+    sel.appendChild(opt);
+  });
+}
+
+// Fermer le modal admin
+function closeAdminReset(){
+  document.getElementById('adminModal').style.display = 'none';
+  document.getElementById('adminPass').value = '';
+  document.getElementById('newLeaderPass').value = '';
+}
+
+// Réinitialiser le mot de passe chef de section
+function doAdminReset(){
+  const adminPass = document.getElementById('adminPass').value;
+  if(adminPass !== 'ucao') return alert('Mot de passe admin incorrect');
+
+  const secIndex = +document.getElementById('adminSectionSelect').value;
+  const newPass = document.getElementById('newLeaderPass').value.trim();
+  if(!newPass) return alert('Entrez un nouveau mot de passe pour la section');
+
+  data.sections[secIndex].leaderPass = newPass;
+  save();
+  closeAdminReset();
+  alert(`Mot de passe de la section "${data.sections[secIndex].name}" réinitialisé ✅`);
 }
 
 init();
